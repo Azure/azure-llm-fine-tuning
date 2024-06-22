@@ -1,6 +1,6 @@
 # LLM Fine-tuning on Azure
 
-This hands-on walks you through fine-tuning an open source LLM on Azure and serving the fine-tuned model on Azure. It is intended for Data Scientists and ML engineers who have experience with fine-tuning but are unfamiliar with Azure ML.
+This hands-on walks you through fine-tuning an open source LLM on Azure and serving the fine-tuned model on Azure. It is intended for Data Scientists and ML engineers who have experience with fine-tuning but are unfamiliar with Azure ML and Mlflow.
 We are using the Microsoft [Phi-3-mini-4k-instruct](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct) model, but you can use it freely as long as it is a public liecnse LLM registered with Hugging Face.
 
 ## Contents
@@ -27,7 +27,9 @@ Before starting, you have met the following requirements:
     ```
 3. *(Optional)* If you are interested in dataset preprocessing, see the hands-ons in `dataset-preparation` folder.
 4. Go to `fine-tuning` folder and modify `config.yml`.
-5. Run `1_training.ipynb` and `2_serving.ipynb`, respectively.
+5. Choose one of two options. By default, we recommend MLflow.
+    - [Option 1. MLflow] Run `1_training_mlflow.ipynb` and `2_serving.ipynb`, respectively.
+    - [Option 2. Custom] Run `1_training_custom.ipynb` and `2_serving.ipynb`, respectively.
 
 ## References
 
