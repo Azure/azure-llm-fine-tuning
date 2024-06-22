@@ -7,6 +7,7 @@ config:
     CLOUD_DIR: "./cloud"
     HF_MODEL_NAME_OR_PATH: "microsoft/Phi-3-mini-4k-instruct"
     IS_DEBUG: true
+    USE_LOWPRIORITY_VM: true
 
 train:
     azure_env_name: "llm-finetuning-2024-05-27" # Please modify to your AzureML env name

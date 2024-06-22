@@ -1,6 +1,4 @@
-
 import os
-#import mlflow
 import argparse
 import sys
 import logging
@@ -72,7 +70,7 @@ def main(args):
         "lr_scheduler_type": args.lr_scheduler_type,
         "num_train_epochs": args.epochs,
         "max_steps": -1,
-        "output_dir": "./checkpoint_dir",
+        "output_dir": args.output_dir,
         "overwrite_output_dir": True,
         "per_device_train_batch_size": args.train_batch_size,
         "per_device_eval_batch_size": args.eval_batch_size,
@@ -96,7 +94,9 @@ def main(args):
         "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
         "modules_to_save": None,
     }
-
+    
+    checkpoint_dir = os.path.join(args.output_dir, "checkpoints")
+    
     train_conf = TrainingArguments(
         **training_config,
         report_to="wandb" if use_wandb else "none",
@@ -173,7 +173,15 @@ def main(args):
     logger.info(f"GPU = {gpu_stats.name}. Max memory = {max_memory} GB.")
     logger.info(f"{start_gpu_memory} GB of memory reserved.")
 
-    trainer_stats = trainer.train()
+    last_checkpoint = None
+    if os.path.isdir(checkpoint_dir):
+        checkpoints = [os.path.join(checkpoint_dir, d) for d in os.listdir(checkpoint_dir)]
+        if len(checkpoints) > 0:
+            checkpoints.sort(key=os.path.getmtime, reverse=True)
+            last_checkpoint = checkpoints[0]        
+
+    trainer_stats = trainer.train(resume_from_checkpoint=last_checkpoint)
+    
     metrics = trainer_stats.metrics
  
     # Show final memory and time stats 
@@ -231,6 +239,7 @@ def parse_args():
     parser.add_argument("--train_dir", default="data", type=str, help="Input directory for training")
     parser.add_argument("--model_dir", default="./model", type=str, help="output directory for model")
     parser.add_argument("--epochs", default=1, type=int, help="number of epochs")
+    parser.add_argument("--output_dir", default="./output_dir", type=str, help="directory to temporarily store when training a model")    
     parser.add_argument("--train_batch_size", default=2, type=int, help="training - mini batch size for each gpu/process")
     parser.add_argument("--eval_batch_size", default=4, type=int, help="evaluation - mini batch size for each gpu/process")
     parser.add_argument("--learning_rate", default=5e-06, type=float, help="learning rate")

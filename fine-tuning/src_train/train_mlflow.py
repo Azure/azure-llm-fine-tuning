@@ -51,6 +51,11 @@ def apply_chat_template(
 
 def main(args):
     
+    # MLflow experiment
+    # mlflow_tracking_uri = ml_client.workspaces.get(ml_client.workspace_name).mlflow_tracking_uri    
+    # mlflow.set_tracking_uri(mlflow_tracking_uri)
+    #mlflow.set_experiment(args.mlflow_experiment_name)
+
     ###################
     # Hyper-parameters
     ###################
@@ -62,9 +67,9 @@ def main(args):
         os.environ["WANDB_WATCH"] = args.wandb_watch
     if len(args.wandb_log_model) > 0:
         os.environ["WANDB_LOG_MODEL"] = args.wandb_log_model
-        
+
     use_wandb = len(args.wandb_project) > 0 or ("WANDB_PROJECT" in os.environ and len(os.environ["WANDB_PROJECT"]) > 0) 
-        
+
     training_config = {
         "bf16": True,
         "do_eval": False,
@@ -102,7 +107,7 @@ def main(args):
 
     train_conf = TrainingArguments(
         **training_config,
-        report_to="wandb" if use_wandb else "none",
+        report_to="wandb" if use_wandb else "azure_ml",
         run_name=args.wandb_run_name if use_wandb else None,    
     )
     peft_conf = LoraConfig(**peft_config)
@@ -130,7 +135,7 @@ def main(args):
     )
     logger.info(f"Training/evaluation parameters {train_conf}")
     logger.info(f"PEFT parameters {peft_conf}")    
-    
+
     ##################
     # Data Processing
     ##################
@@ -154,30 +159,51 @@ def main(args):
         desc="Applying chat template to test_sft",
     )
 
-    ###########
-    # Training
-    ###########
-    trainer = SFTTrainer(
-        model=model,
-        args=train_conf,
-        peft_config=peft_conf,
-        train_dataset=processed_train_dataset,
-        eval_dataset=processed_eval_dataset,
-        max_seq_length=args.max_seq_length,
-        dataset_text_field="text",
-        tokenizer=tokenizer,
-        packing=True
-    )
-    
-    # Show current memory stats
-    gpu_stats = torch.cuda.get_device_properties(0)
-    start_gpu_memory = round(torch.cuda.max_memory_reserved() / 1024 / 1024 / 1024, 3)
-    max_memory = round(gpu_stats.total_memory / 1024 / 1024 / 1024, 3)
-    logger.info(f"GPU = {gpu_stats.name}. Max memory = {max_memory} GB.")
-    logger.info(f"{start_gpu_memory} GB of memory reserved.")
+    with mlflow.start_run() as run:        
+        ###########
+        # Training
+        ###########
+        trainer = SFTTrainer(
+            model=model,
+            args=train_conf,
+            peft_config=peft_conf,
+            train_dataset=processed_train_dataset,
+            eval_dataset=processed_eval_dataset,
+            max_seq_length=args.max_seq_length,
+            dataset_text_field="text",
+            tokenizer=tokenizer,
+            packing=True,
+        )
 
-    with mlflow.start_run():    
+        # Show current memory stats
+        gpu_stats = torch.cuda.get_device_properties(0)
+        start_gpu_memory = round(torch.cuda.max_memory_reserved() / 1024 / 1024 / 1024, 3)
+        max_memory = round(gpu_stats.total_memory / 1024 / 1024 / 1024, 3)
+        logger.info(f"GPU = {gpu_stats.name}. Max memory = {max_memory} GB.")
+        logger.info(f"{start_gpu_memory} GB of memory reserved.")
+
         trainer_stats = trainer.train()
+
+        #############
+        # Logging
+        #############
+        metrics = trainer_stats.metrics
+
+        # Show final memory and time stats 
+        used_memory = round(torch.cuda.max_memory_reserved() / 1024 / 1024 / 1024, 3)
+        used_memory_for_lora = round(used_memory - start_gpu_memory, 3)
+        used_percentage = round(used_memory         /max_memory*100, 3)
+        lora_percentage = round(used_memory_for_lora/max_memory*100, 3)
+
+        logger.info(f"{metrics['train_runtime']} seconds used for training.")
+        logger.info(f"{round(metrics['train_runtime']/60, 2)} minutes used for training.")
+        logger.info(f"Peak reserved memory = {used_memory} GB.")
+        logger.info(f"Peak reserved memory for training = {used_memory_for_lora} GB.")
+        logger.info(f"Peak reserved memory % of max memory = {used_percentage} %.")
+        logger.info(f"Peak reserved memory for training % of max memory = {lora_percentage} %.")
+                
+        trainer.log_metrics("train", metrics)
+
         model_info = mlflow.transformers.log_model(
             transformers_model={"model": trainer.model, "tokenizer": tokenizer},
             #prompt_template=prompt_template,
@@ -185,24 +211,6 @@ def main(args):
             artifact_path="model",  # This is a relative path to save model files within MLflow run
         )
 
-    metrics = trainer_stats.metrics
-
-    # Show final memory and time stats 
-    used_memory = round(torch.cuda.max_memory_reserved() / 1024 / 1024 / 1024, 3)
-    used_memory_for_lora = round(used_memory - start_gpu_memory, 3)
-    used_percentage = round(used_memory         /max_memory*100, 3)
-    lora_percentage = round(used_memory_for_lora/max_memory*100, 3)
-
-    logger.info(f"{metrics['train_runtime']} seconds used for training.")
-    logger.info(f"{round(metrics['train_runtime']/60, 2)} minutes used for training.")
-    logger.info(f"Peak reserved memory = {used_memory} GB.")
-    logger.info(f"Peak reserved memory for training = {used_memory_for_lora} GB.")
-    logger.info(f"Peak reserved memory % of max memory = {used_percentage} %.")
-    logger.info(f"Peak reserved memory for training % of max memory = {lora_percentage} %.")
-
-    trainer.log_metrics("train", metrics)
-    #trainer.save_metrics("train", metrics)
-    #trainer.save_state()
 
 def parse_args():
     # setup argparse
@@ -224,7 +232,7 @@ def parse_args():
     parser.add_argument("--warmup_ratio", default=0.2, type=float, help="warmup ratio")
     parser.add_argument("--max_seq_length", default=2048, type=int, help="max seq length")
     parser.add_argument("--save_merged_model", type=bool, default=False)
-    
+
     # lora hyperparameters
     parser.add_argument("--lora_r", default=16, type=int, help="lora r")
     parser.add_argument("--lora_alpha", default=16, type=int, help="lora alpha")

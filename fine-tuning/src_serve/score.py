@@ -18,8 +18,6 @@ def init():
     model_path = os.path.join(
         os.getenv("AZUREML_MODEL_DIR"), "outputs"
     )
-    #model_path = "/mnt/batch/tasks/shared/LS_root/mounts/clusters/poc-a100/code/Users/daekeunkim/artifact_downloads/phi-3-finetune2-2024-05-15/outputs/"
-
     model_id = "microsoft/Phi-3-mini-4k-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map={"":0}, torch_dtype="auto", trust_remote_code=True)
@@ -37,6 +35,6 @@ def run(json_data: str):
     output = pipe(input_data, **params)
     generated_text = output[0]['generated_text']
     logging.info("Output Response: " + generated_text)
-    #json_result = json.dumps({"result":str(generated_text)})
     json_result = {"result": str(generated_text)}
+    
     return json_result    
