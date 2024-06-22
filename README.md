@@ -21,7 +21,7 @@ Before starting, you have met the following requirements:
 1. Create your compute instance. For code development, we recommend `Standard_DS11_v2` (2 cores, 14GB RAM, 28GB storage, No GPUs).
 2. Open the terminal of the CI and run: 
     ```shell
-    git clone https://github.com/daekeun-ml/azure-llm-fine-tuning.git
+    git clone https://github.com/Azure/azure-llm-fine-tuning.git
     conda activate azureml_py310_sdkv2
     pip install -r requirements.txt
     ```
