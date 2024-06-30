@@ -11,7 +11,7 @@ This hands-on is suitable for the following purposes:
 
 - ### [Phi-3 Fine-tuning](phi3)
 
-- ### [Florence2 Fine-tuning on DoCVQA](florence2-VQA)
+- ### [Florence-2 Fine-tuning on DoCVQA](florence2-VQA)
 
 ## Requirements
 
@@ -48,8 +48,8 @@ Before starting, you have met the following requirements:
 - [microsoft/Phi-3-mini-4k-instruct](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct): This is Microsoft's official Phi-3-mini-4k-instruct model.
 - [daekeun-ml/Phi-3-medium-4k-instruct-ko-poc-v0.1](https://huggingface.co/daekeun-ml/Phi-3-medium-4k-instruct-ko-poc-v0.1)
 
-### Florence2
-- [Hugging Face Blog - Finetune Florence2 on DoCVQA](https://huggingface.co/blog/finetune-florence2)
+### Florence-2
+- [Hugging Face Blog - Finetune Florence-2 on DoCVQA](https://huggingface.co/blog/finetune-florence2)
 
 ## Contributing
 
