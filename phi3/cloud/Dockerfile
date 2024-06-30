@@ -1,8 +1,10 @@
-FROM mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu121-py38-torch212:biweekly.202402.2
+FROM mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu118-py38-torch222:biweekly.202406.2
 
 # Install pip dependencies
 COPY requirements.txt .
 RUN pip install -r requirements.txt --no-cache-dir
+
+RUN MAX_JOBS=4 pip install flash-attn==2.5.9.post1 --no-build-isolation
 
 # Inference requirements
 COPY --from=mcr.microsoft.com/azureml/o16n-base/python-assets:20230419.v1 /artifacts /var/
