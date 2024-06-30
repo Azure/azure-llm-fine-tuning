@@ -11,7 +11,7 @@ This hands-on is suitable for the following purposes:
 
 - ### [Phi-3 Fine-tuning](phi3)
 
-- ### [Florence2 - VQA](florence2-VQA)
+- ### [Florence2 Fine-tuning on DoCVQA](florence2-VQA)
 
 ## Requirements
 
