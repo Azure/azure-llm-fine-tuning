@@ -35,7 +35,7 @@ Before starting, you have met the following requirements:
         - [Option 1. MLflow] Run `1_training_mlflow.ipynb` and `2_serving.ipynb`, respectively.
         - [Option 2. Custom] Run `1_training_custom.ipynb` and `2_serving.ipynb`, respectively.
         - *(Optional)* If you are interested in LLM dataset preprocessing, see the hands-ons in `phi3/dataset-preparation` folder.
-    - [Florence2-VQA]((florence2-VQA)
+    - [Florence2-VQA](florence2-VQA)
         - Run `1_training_mlflow.ipynb` and `2_serving.ipynb`, respectively.
     - Don't forget to edit the `config.yml`.
 
