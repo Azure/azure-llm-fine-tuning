@@ -20,8 +20,30 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-def load_model(args, model_name_or_path="microsoft/Phi-3-mini-4k-instruct"):
+def log_params_from_dict(config, mlflow_client, parent_key=''):
+    """
+    Given a dictionary of parameters, logs non-dictionary values to the specified mlflow client.
+    Ignores nested dictionaries.
 
+    Args:
+        config (dict): The dictionary of parameters to log.
+        mlflow_client: The mlflow client to use for logging.
+        parent_key (str): Used to prefix keys (for nested logging).
+    """
+    for key, value in config.items():
+        if isinstance(value, dict):
+            continue
+        elif isinstance(value, list):
+            full_key = f"{parent_key}.{key}" if parent_key else key
+            mlflow_client.log_param(full_key, ','.join(map(str, value)))
+        else:
+            full_key = f"{parent_key}.{key}" if parent_key else key
+            mlflow_client.log_param(full_key, value)
+            
+
+def load_model(args):
+
+    model_name_or_path = args.model_name_or_path    
     model_kwargs = dict(
         use_cache=False,
         trust_remote_code=True,
@@ -50,11 +72,6 @@ def apply_chat_template(
     return example
 
 def main(args):
-    
-    # MLflow experiment
-    # mlflow_tracking_uri = ml_client.workspaces.get(ml_client.workspace_name).mlflow_tracking_uri    
-    # mlflow.set_tracking_uri(mlflow_tracking_uri)
-    #mlflow.set_experiment(args.mlflow_experiment_name)
 
     ###################
     # Hyper-parameters
@@ -158,8 +175,12 @@ def main(args):
         remove_columns=column_names,
         desc="Applying chat template to test_sft",
     )
-
-    with mlflow.start_run() as run:        
+    
+    with mlflow.start_run() as run:     
+        
+        log_params_from_dict(training_config, mlflow)
+        log_params_from_dict(peft_config, mlflow)
+        
         ###########
         # Training
         ###########
@@ -203,13 +224,37 @@ def main(args):
         logger.info(f"Peak reserved memory for training % of max memory = {lora_percentage} %.")
                 
         trainer.log_metrics("train", metrics)
+        trainer.save_metrics("train", metrics)
+        trainer.save_state()
+        
+        #############
+        # Evaluation
+        #############
+        # tokenizer.padding_side = "left"
+        # metrics = trainer.evaluate()
+        # metrics["eval_samples"] = len(processed_eval_dataset)
+        # trainer.log_metrics("eval", metrics)
+        # trainer.save_metrics("eval", metrics)
 
-        model_info = mlflow.transformers.log_model(
-            transformers_model={"model": trainer.model, "tokenizer": tokenizer},
-            #prompt_template=prompt_template,
-            #signature=signature,
-            artifact_path="model",  # This is a relative path to save model files within MLflow run
-        )
+        # ############
+        # # Save model
+        # ############
+        os.makedirs(args.model_dir, exist_ok=True)
+
+        if args.save_merged_model:
+            model_tmp_dir = "model_tmp"
+            os.makedirs(model_tmp_dir, exist_ok=True)
+            trainer.model.save_pretrained(model_tmp_dir)
+            print(f"Save merged model: {args.model_dir}")
+            from peft import AutoPeftModelForCausalLM
+            model = AutoPeftModelForCausalLM.from_pretrained(model_tmp_dir, low_cpu_mem_usage=True, torch_dtype=torch.bfloat16)
+            merged_model = model.merge_and_unload()
+            merged_model.save_pretrained(args.model_dir, safe_serialization=True)
+        else:
+            print(f"Save PEFT model: {args.model_dir}")    
+            trainer.model.save_pretrained(args.model_dir)
+
+        tokenizer.save_pretrained(args.model_dir)             
 
 
 def parse_args():
@@ -218,6 +263,7 @@ def parse_args():
     # curr_time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     # hyperparameters
+    parser.add_argument("--model_name_or_path", default="microsoft/Phi-3.5-mini-instruct", type=str, help="Input directory for training")    
     parser.add_argument("--train_dir", default="data", type=str, help="Input directory for training")
     parser.add_argument("--model_dir", default="./model", type=str, help="output directory for model")
     parser.add_argument("--epochs", default=1, type=int, help="number of epochs")

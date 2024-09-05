@@ -16,9 +16,9 @@ def init():
     # It is the path to the model folder (./azureml-models/$MODEL_NAME/$VERSION)
     # Please provide your model's folder name if there is one
     model_path = os.path.join(
-        os.getenv("AZUREML_MODEL_DIR"), "outputs"
+        os.getenv("AZUREML_MODEL_DIR"), "{{score_model_dir}}"
     )
-    model_id = "microsoft/Phi-3-mini-4k-instruct"
+    model_id = "{{hf_model_name_or_path}}"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map={"":0}, torch_dtype="auto", trust_remote_code=True)
 
@@ -37,4 +37,4 @@ def run(json_data: str):
     logging.info("Output Response: " + generated_text)
     json_result = {"result": str(generated_text)}
     
-    return json_result    
+    return json_result

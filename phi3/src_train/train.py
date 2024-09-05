@@ -15,8 +15,9 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-def load_model(args, model_name_or_path="microsoft/Phi-3-mini-4k-instruct"):
+def load_model(args):
 
+    model_name_or_path = args.model_name_or_path    
     model_kwargs = dict(
         use_cache=False,
         trust_remote_code=True,
@@ -236,6 +237,7 @@ def parse_args():
     # curr_time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     # hyperparameters
+    parser.add_argument("--model_name_or_path", default="microsoft/Phi-3.5-mini-instruct", type=str, help="Input directory for training")    
     parser.add_argument("--train_dir", default="data", type=str, help="Input directory for training")
     parser.add_argument("--model_dir", default="./model", type=str, help="output directory for model")
     parser.add_argument("--epochs", default=1, type=int, help="number of epochs")
