@@ -1,6 +1,6 @@
-# LLM Fine-tuning on Azure
+# SLM/LLM Fine-tuning on Azure
 
-This hands-on walks you through fine-tuning an open source LLM on Azure and serving the fine-tuned model on Azure. It is intended for Data Scientists and ML engineers who have experience with fine-tuning but are unfamiliar with Azure ML and Mlflow.
+This hands-on walks you through fine-tuning an open source SLM/LLM on Azure and serving the fine-tuned model on Azure. It is intended for Data Scientists and ML engineers who have experience with fine-tuning but are unfamiliar with Azure ML and Mlflow.
 This hands-on is suitable for the following purposes:
 
 1. Half-day workshop or 1-day workshop
@@ -20,7 +20,7 @@ Before starting, you have met the following requirements:
 - [Azure ML getting started](https://github.com/Azure/azureml-examples/tree/main/tutorials): Connect to Azure ML workspace and get your <WORKSPACE_NAME>, <RESOURCE_GROUP> and <SUBSCRIPTION_ID>.
 - [Azure ML CLI v2](https://learn.microsoft.com/en-us/azure/machine-learning/concept-v2?view=azureml-api-2#azure-machine-learning-cli-v2)
 - ***[Compute instance - for code development]*** A low-end instance without GPU is recommended: `Standard_DS11_v2` (2 cores, 14GB RAM, 28GB storage, No GPUs).
-- ***[Compute cluster - for LLM training]*** A single NVIDIA A100 GPU node (`Standard_NC24ads_A100_v4`) and a single NVIDIA V100 GPU node (`Standard_NC6s_v3`) is recommended. If you do not have a dedicated quota or are on a tight budget, choose Low-priority VM.
+- ***[Compute cluster - for SLM/LLM training]*** A single NVIDIA A100 GPU node (`Standard_NC24ads_A100_v4`) and a single NVIDIA V100 GPU node (`Standard_NC6s_v3`) is recommended. If you do not have a dedicated quota or are on a tight budget, choose Low-priority VM.
 
 ## How to get started 
 1. Create your compute instance. For code development, we recommend `Standard_DS11_v2` (2 cores, 14GB RAM, 28GB storage, No GPUs).
@@ -34,7 +34,7 @@ Before starting, you have met the following requirements:
     - [Phi-3/Phi-3.5](phi3)
         - [Option 1. MLflow] Run `1_training_mlflow.ipynb` and `2_serving.ipynb`, respectively.
         - [Option 2. Custom] Run `1_training_custom.ipynb` and `2_serving.ipynb`, respectively.
-        - *(Optional)* If you are interested in LLM dataset preprocessing, see the hands-ons in `phi3/dataset-preparation` folder.
+        - *(Optional)* If you are interested in dataset preprocessing, see the hands-ons in `phi3/dataset-preparation` folder.
     - [Florence2-VQA](florence2-VQA)
         - Run `1_training_mlflow.ipynb` and `2_serving.ipynb`, respectively.
     - Don't forget to edit the `config.yml`.
