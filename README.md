@@ -13,7 +13,7 @@ This hands-on is suitable for the following purposes:
 
 - ### [Florence-2 Fine-tuning on DoCVQA](florence2-VQA)
 
-- ### [Azure OpenAI Fine-tuning]](aoai)
+- ### [Azure OpenAI Fine-tuning](aoai)
 
 ## Requirements
 
