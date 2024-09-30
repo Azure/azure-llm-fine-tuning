@@ -11,8 +11,8 @@ config:
 
 train:
     azure_env_name: "llm-finetuning-2024-08-27" # Please modify to your AzureML env name
-    azure_compute_cluster_name: "gpu-cluster-a100"
-    azure_compute_cluster_size: "Standard_NC24ads_A100_v4"  # 1 x A100 (80GB)
+    azure_compute_cluster_name: "gpu-cluster-a100-lowpriority"
+    azure_compute_cluster_size: "Standard_NC24ads_A100_v4" # 1 x A100 (80GB)
     epoch: 1
     train_batch_size: 8
     eval_batch_size: 8
@@ -20,9 +20,9 @@ train:
     wandb_api_key: ""
     wandb_project: ""
     wandb_run_name: ""
-    
+
 serve:
-    azure_env_name: "llm-serving-2024-05-27"  # Please modify to your AzureML env name
+    azure_env_name: "llm-serving-2024-08-27" # Please modify to your AzureML env name
     azure_model_name: "phi3-finetune-2024-08-27" # Please modify to your AzureML model name
     azure_endpoint_name: "phi3-endpoint-2024-08-27"
     azure_deployment_name: "phi3-blue"
