@@ -24,7 +24,7 @@ Before starting, you should meet the following requirements:
 
 - ***[Compute instance - for code development]*** A low-end instance without GPU is recommended: **[Standard_E2as_v4] (AMD 2 cores, 16GB RAM, 32GB storage) or **[Standard_DS11_v2]** (Intel 2 cores, 14GB RAM, 28GB storage, No GPUs)  
 - ***[Compute cluster - for SLM/LLM fine-tuning]*** A single NVIDIA A100 GPU node (**[Standard_NC24ads_A100_v4]**) is recommended. If you do not have a dedicated quota or are on a tight budget, choose **[Low-priority VM]**.
-- ***[Compute cluster - for SLM/LLM deployment]*** Two NVIDIA V100 GPU node (**[Standard_NC6s_v3]**) or two NVIDIA A100 GPU node (**[Standard_NC24ads_A100_v4]**) is recommended. 
+- ***[Compute cluster - for SLM/LLM deployment]*** Two NVIDIA V100 GPU nodes (**[Standard_NC6s_v3]**) or two NVIDIA A100 GPU nodes (**[Standard_NC24ads_A100_v4]**) is recommended. 
 
 **Note**
 For managed onlie endpoints, [Azure ML reserves 20% of the quota for the deployment].[^1] If you request a given number of instances for those VM SKUs in a deployment, you must have a quota for `ceil(1.2 × number of instances requested for deployment) × number of cores for the VM SKU` available to avoid getting an error. For example, if you request 1 instances of a `Standard_NC6s_v3` VM (that comes with six cores) in a deployment, you should have a quota for 12 cores (ceil(1.2 × 1 instances) = 2, 2 × 6 cores) available.  
