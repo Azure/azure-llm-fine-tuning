@@ -1,5 +1,5 @@
 #PTCA image
-FROM mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu118-py38-torch222:biweekly.202406.2
+FROM mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu124-py310-torch241:biweekly.202410.2
 
 USER root
 
@@ -10,4 +10,4 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt --no-cache-dir
 
 RUN python -m nltk.downloader punkt
-RUN MAX_JOBS=4 pip install flash-attn==2.5.9.post1 --no-build-isolation
+RUN MAX_JOBS=4 pip install flash-attn==2.6.3 --no-build-isolation

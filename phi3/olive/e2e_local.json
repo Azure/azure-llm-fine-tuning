@@ -1,0 +1,99 @@
+{
+    "input_model": {
+        "type": "HfModel",
+        "model_path": "microsoft/Phi-3.5-mini-instruct",
+        "load_kwargs": { "trust_remote_code": true }
+    },
+    "systems": {
+        "local_system": {
+            "type": "LocalSystem",
+            "accelerators": [
+                {
+                    "device": "GPU",
+                    "execution_providers": ["GPUExecutionProvider"]
+                }
+            ]
+        }
+    },
+    "data_configs": [
+        {
+            "name": "dataset_default_train",
+            "type": "HuggingfaceContainer",
+            "load_dataset_config": {
+                "params": {
+                    "data_name": "json",
+                    "data_files": {
+                        "type": "azureml_datastore",
+                        "config": {
+                            "azureml_client": {
+                                "subscription_id": "[YOUR_SUBSCRIPTION_ID]",
+                                "resource_group": "[YOUR_RESOURCE_GROUP]",
+                                "workspace_name": "[YOUR_WORKSPACE_NAME]"
+                            },
+                            "datastore_name": "workspaceblobstore",
+                            "relative_path": "[YOUR_DATA_PATH]/train.json"
+                        }
+                    },
+                    "split": "train"
+                }
+            },
+            "pre_process_data_config": {
+                "params": {
+                    "dataset_type": "corpus",
+                    "text_cols": ["text"],
+                    "text_template": "### Text: {text}",
+                    "corpus_strategy": "join",
+                    "source_max_len": 1024,
+                    "pad_to_max_len": false,
+                    "use_attention_mask": false
+                }
+            }
+        }
+    ],
+    "passes": {
+        "lora": {
+            "type": "LoRA",
+            "config": {
+                "target_modules": ["o_proj", "qkv_proj"],
+                "lora_r": 64,
+                "lora_alpha": 64,
+                "lora_dropout": 0.1,
+                "train_data_config": "dataset_default_train",
+                "training_args": {
+                    "seed": 0,
+                    "data_seed": 42,
+                    "per_device_train_batch_size": 1,
+                    "per_device_eval_batch_size": 1,
+                    "gradient_accumulation_steps": 4,
+                    "gradient_checkpointing": false,
+                    "learning_rate": 0.0001,
+                    "num_train_epochs": 1,
+                    "max_steps": 10,
+                    "logging_steps": 10,
+                    "evaluation_strategy": "steps",
+                    "eval_steps": 187,
+                    "group_by_length": true,
+                    "adam_beta2": 0.999,
+                    "max_grad_norm": 0.3
+                }
+            }
+        },
+        "merge_adapter_weights": {
+            "type": "MergeAdapterWeights"
+        },
+        "builder": {
+            "type": "ModelBuilder",
+            "precision": "int4",
+            "int4_accuracy_level": 4
+        }
+    },
+    "pass_flows": [["lora", "merge_adapter_weights", "builder"]],
+    "engine": {
+        "log_severity_level": 0,
+        "host": "local_system",
+        "target": "local_system",
+        "search_strategy": false,
+        "cache_dir": "cache",
+        "output_dir": "../model-cache/models/phi3-finetuned"
+    }
+}

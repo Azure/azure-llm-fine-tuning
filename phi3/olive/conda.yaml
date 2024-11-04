@@ -1,0 +1,25 @@
+name: project_environment
+channels:
+    - defaults
+dependencies:
+    - python=3.8.13
+    - pip=22.3.1
+    - pip:
+          - einops
+          - accelerate
+          - azure-keyvault-secrets
+          - azure-identity
+          - bitsandbytes
+          - datasets
+          - huggingface_hub
+          - peft
+          - scipy
+          - sentencepiece
+          - torch
+          - transformers
+          - git+https://github.com/microsoft/Olive#egg=olive-ai[gpu]
+          - onnx
+          - onnxruntime
+          - onnxruntime-genai>=0.4.0
+          - onnxscript
+          - lm_eval
