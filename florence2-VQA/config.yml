@@ -2,7 +2,7 @@ config:
     AZURE_SUBSCRIPTION_ID: "<YOUR-SUBSCRIPTION-ID>" # Please modify to your subscription
     AZURE_RESOURCE_GROUP: "<YOUR-RESOURCE-GROUP>" # Please modify to your Azure resource group
     AZURE_WORKSPACE: "<YOUR-AZURE-WORKSPACE>" # Please modify to your Azure workspace
-    AZURE_DATA_NAME: "<YOUR-DATA>" # Please modify to your AzureML data name
+    AZURE_DATA_NAME: "finetune-vqa" # Please modify to your AzureML data name
     DATA_DIR: "./dataset"
     CLOUD_DIR: "./cloud"
     HF_MODEL_NAME_OR_PATH: "microsoft/Florence-2-base-ft"
@@ -10,9 +10,9 @@ config:
     USE_LOWPRIORITY_VM: true
 
 train:
-    azure_env_name: "llm-finetune-docker" # Please modify to your AzureML env name
+    azure_env_name: "llm-finetuning-florence-2024-11-05" # Please modify to your AzureML env name
     azure_compute_cluster_name: "gpu-cluster-a100"
-    azure_compute_cluster_size: "Standard_NC24ads_A100_v4"  # 1 x A100 (80GB)
+    azure_compute_cluster_size: "Standard_NC24ads_A100_v4" # 1 x A100 (80GB)
     epoch: 1
     train_batch_size: 8
     eval_batch_size: 8
@@ -20,9 +20,9 @@ train:
     wandb_api_key: ""
     wandb_project: ""
     wandb_run_name: ""
-    
+
 serve:
-    azure_env_name: "llm-serving-2024-05-27"  # Please modify to your AzureML env name
+    azure_env_name: "llm-serving-2024-11-05" # Please modify to your AzureML env name
     azure_model_name: "florence2-vqa-finetune" # Please modify to your AzureML model name
     azure_endpoint_name: "florence2-vqa-endpoint"
     azure_deployment_name: "florence2-blue"

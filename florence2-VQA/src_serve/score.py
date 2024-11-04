@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def run_example_base64(task_prompt, text_input, base64_image, params):
-
+ 
     max_new_tokens = params["max_new_tokens"]
     num_beams = params["num_beams"]
     
@@ -66,7 +66,7 @@ def init():
     processor = AutoProcessor.from_pretrained(model_name_or_path, **processor_kwargs)    
 
     logging.info("Loaded model.")
-
+    
 def run(json_data: str):
     logging.info("Request received")
     data = json.loads(json_data)

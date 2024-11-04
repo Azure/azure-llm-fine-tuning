@@ -1,3 +1,11 @@
+---
+layout: default
+title: Optimization using Microsoft Olive
+permalink: /2_2_optimization/
+parent: Lab 2. SLM/LLM Fine-tuning on Azure ML Studio
+nav_order: 5.1
+---
+
 # Optimize SLM using Microsoft Olive
 
 This hands-on considers on-device or hybrid deployment scenarios.
