@@ -16,13 +16,19 @@ This hands-on is suitable for the following purposes:
 - ### [Azure OpenAI Fine-tuning](aoai)
 
 ## Requirements
+Before starting, you should meet the following requirements:
 
-Before starting, you have met the following requirements:
+- [Access to Azure OpenAI Service](https://go.microsoft.com/fwlink/?linkid=2222006)
+- [Azure ML getting started](https://github.com/Azure/azureml-examples/tree/main/tutorials): Connect to [Azure ML] workspace and get your <WORKSPACE_NAME>, <RESOURCE_GROUP> and <SUBSCRIPTION_ID>.
+- [Azure AI Studio getting started](https://aka.ms/azureaistudio): Create a project
 
-- [Azure ML getting started](https://github.com/Azure/azureml-examples/tree/main/tutorials): Connect to Azure ML workspace and get your <WORKSPACE_NAME>, <RESOURCE_GROUP> and <SUBSCRIPTION_ID>.
-- [Azure ML CLI v2](https://learn.microsoft.com/en-us/azure/machine-learning/concept-v2?view=azureml-api-2#azure-machine-learning-cli-v2)
-- ***[Compute instance - for code development]*** A low-end instance without GPU is recommended: `Standard_DS11_v2` (2 cores, 14GB RAM, 28GB storage, No GPUs).
-- ***[Compute cluster - for SLM/LLM training]*** A single NVIDIA A100 GPU node (`Standard_NC24ads_A100_v4`) and a single NVIDIA V100 GPU node (`Standard_NC6s_v3`) is recommended. If you do not have a dedicated quota or are on a tight budget, choose Low-priority VM.
+- ***[Compute instance - for code development]*** A low-end instance without GPU is recommended: **[Standard_E2as_v4] (AMD 2 cores, 16GB RAM, 32GB storage) or **[Standard_DS11_v2]** (Intel 2 cores, 14GB RAM, 28GB storage, No GPUs)  
+- ***[Compute cluster - for SLM/LLM fine-tuning]*** A single NVIDIA A100 GPU node (**[Standard_NC24ads_A100_v4]**) is recommended. If you do not have a dedicated quota or are on a tight budget, choose **[Low-priority VM]**.
+- ***[Compute cluster - for SLM/LLM deployment]*** Two NVIDIA V100 GPU node (**[Standard_NC6s_v3]**) or two NVIDIA A100 GPU node (**[Standard_NC24ads_A100_v4]**) is recommended. 
+
+**Note**
+For managed onlie endpoints, [Azure ML reserves 20% of the quota for the deployment].[^1] If you request a given number of instances for those VM SKUs in a deployment, you must have a quota for `ceil(1.2 × number of instances requested for deployment) × number of cores for the VM SKU` available to avoid getting an error. For example, if you request 1 instances of a `Standard_NC6s_v3` VM (that comes with six cores) in a deployment, you should have a quota for 12 cores (ceil(1.2 × 1 instances) = 2, 2 × 6 cores) available.  
+
 
 ## How to get started
 
@@ -84,3 +90,5 @@ Any use of third-party trademarks or logos are subject to those third-party's po
 ## License Summary
 
 This sample code is provided under the MIT-0 license. See the LICENSE file.
+
+[^1]: This extra quota is reserved for system-initiated operations such as OS upgrades and VM recovery, and it won't incur cost unless such operations run.
