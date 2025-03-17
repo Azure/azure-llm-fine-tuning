@@ -38,7 +38,7 @@ def main():
             show_progress=True
         )
 
-        tokenizer.save('korean_tokenizer_bbpe.json') 
+        tokenizer.save('english_tokenizer_bbpe.json') 
         print("Elapsed time:", time.time() - t1)
         
     else:
@@ -54,7 +54,7 @@ def main():
             show_progress=True
         )
 
-        tokenizer.save('korean_tokenizer_bpe.json') 
+        tokenizer.save('english_tokenizer_bpe.json') 
         print("Elapsed time:", time.time() - t1)
 
 if __name__ == '__main__':
