@@ -8,9 +8,9 @@ from datasets import load_dataset
 from peft import LoraConfig
 import torch
 import transformers
-from trl import SFTTrainer
+from trl import SFTConfig, SFTTrainer
+
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, BitsAndBytesConfig
-from datasets import load_dataset
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -61,30 +61,6 @@ def main(args):
         
     use_wandb = len(args.wandb_project) > 0 or ("WANDB_PROJECT" in os.environ and len(os.environ["WANDB_PROJECT"]) > 0) 
         
-    training_config = {
-        "bf16": True,
-        "do_eval": False,
-        "learning_rate": args.learning_rate,
-        "log_level": "info",
-        "logging_steps": args.logging_steps,
-        "logging_strategy": "steps",
-        "lr_scheduler_type": args.lr_scheduler_type,
-        "num_train_epochs": args.epochs,
-        "max_steps": -1,
-        "output_dir": args.output_dir,
-        "overwrite_output_dir": True,
-        "per_device_train_batch_size": args.train_batch_size,
-        "per_device_eval_batch_size": args.eval_batch_size,
-        "remove_unused_columns": True,
-        "save_steps": args.save_steps,
-        "save_total_limit": 1,
-        "seed": args.seed,
-        "gradient_checkpointing": True,
-        "gradient_checkpointing_kwargs": {"use_reentrant": False},
-        "gradient_accumulation_steps": args.grad_accum_steps,
-        "warmup_ratio": args.warmup_ratio,
-    }
-
     peft_config = {
         "r": args.lora_r,
         "lora_alpha": args.lora_alpha,
@@ -96,13 +72,36 @@ def main(args):
         "modules_to_save": None,
     }
     
+    train_conf = SFTConfig(
+        bf16=True,
+        do_eval=False,
+        learning_rate=args.learning_rate,
+        log_level="info",
+        logging_steps=args.logging_steps,
+        logging_strategy="steps",
+        lr_scheduler_type=args.lr_scheduler_type,
+        num_train_epochs=args.epochs,
+        max_steps=-1,
+        output_dir=args.output_dir,
+        overwrite_output_dir=True,
+        per_device_train_batch_size=args.train_batch_size,
+        per_device_eval_batch_size=args.eval_batch_size,
+        remove_unused_columns=True,
+        save_steps=args.save_steps,
+        save_total_limit=1,
+        seed=args.seed,
+        gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
+        gradient_accumulation_steps=args.grad_accum_steps,
+        warmup_ratio=args.warmup_ratio,
+        max_seq_length=args.max_seq_length,
+        packing=True,
+        report_to="wandb" if use_wandb else "none",
+        run_name=args.wandb_run_name if use_wandb else None    
+    )    
+    
     checkpoint_dir = os.path.join(args.output_dir, "checkpoints")
     
-    train_conf = TrainingArguments(
-        **training_config,
-        report_to="wandb" if use_wandb else "none",
-        run_name=args.wandb_run_name if use_wandb else None,    
-    )
     peft_conf = LoraConfig(**peft_config)
     model, tokenizer = load_model(args)
 
@@ -161,10 +160,7 @@ def main(args):
         peft_config=peft_conf,
         train_dataset=processed_train_dataset,
         eval_dataset=processed_eval_dataset,
-        max_seq_length=args.max_seq_length,
-        dataset_text_field="text",
-        tokenizer=tokenizer,
-        packing=True
+        tokenizer=tokenizer
     )
     
     # Show current memory stats
@@ -237,7 +233,7 @@ def parse_args():
     # curr_time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     # hyperparameters
-    parser.add_argument("--model_name_or_path", default="microsoft/Phi-3.5-mini-instruct", type=str, help="Input directory for training")    
+    parser.add_argument("--model_name_or_path", default="microsoft/Phi-4-mini-instruct", type=str, help="Input directory for training")    
     parser.add_argument("--train_dir", default="data", type=str, help="Input directory for training")
     parser.add_argument("--model_dir", default="./model", type=str, help="output directory for model")
     parser.add_argument("--epochs", default=1, type=int, help="number of epochs")

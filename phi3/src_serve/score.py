@@ -18,7 +18,7 @@ def init():
     model_path = os.path.join(
         os.getenv("AZUREML_MODEL_DIR"), "./outputs"
     )
-    model_id = "microsoft/Phi-3.5-mini-instruct"
+    model_id = "microsoft/Phi-4-mini-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map={"":0}, torch_dtype="auto", trust_remote_code=True)
 

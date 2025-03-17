@@ -5,12 +5,12 @@ config:
     AZURE_DATA_NAME: "hf-ultrachat" # Please modify to your AzureML data name
     DATA_DIR: "./dataset"
     CLOUD_DIR: "./cloud"
-    HF_MODEL_NAME_OR_PATH: "microsoft/Phi-3.5-mini-instruct"
+    HF_MODEL_NAME_OR_PATH: "microsoft/Phi-4-mini-instruct"
     IS_DEBUG: true
     USE_LOWPRIORITY_VM: true
 
 train:
-    azure_env_name: "llm-finetuning-2024-11-05" # Please modify to your AzureML env name
+    azure_env_name: "llm-finetuning-2025-03-17" # Please modify to your AzureML env name
     azure_compute_cluster_name: "gpu-cluster-a100"
     azure_compute_cluster_size: "Standard_NC24ads_A100_v4" # 1 x A100 (80GB)
     epoch: 1
@@ -22,8 +22,8 @@ train:
     wandb_run_name: ""
 
 serve:
-    azure_env_name: "llm-serving-2024-11-05" # Please modify to your AzureML env name
-    azure_model_name: "phi3-finetune-2024-11-05" # Please modify to your AzureML model name
-    azure_endpoint_name: "phi3-endpoint-2024-11-05"
-    azure_deployment_name: "phi3-blue"
+    azure_env_name: "llm-serving-2025-03-17" # Please modify to your AzureML env name
+    azure_model_name: "phi4-finetune-2025-03-17" # Please modify to your AzureML model name
+    azure_endpoint_name: "phi4-endpoint-2025-03-17"
+    azure_deployment_name: "phi4-blue"
     azure_serving_cluster_size: "Standard_NC6s_v3"

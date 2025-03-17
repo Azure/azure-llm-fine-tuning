@@ -5,16 +5,18 @@ dependencies:
   - python=3.10
   - pip=24.0
   - pip:
-    - bitsandbytes==0.43.3
-    - transformers==4.44.2
-    - peft~=0.12
-    - accelerate~=0.33
-    - trl==0.10.1
-    - einops==0.8.0
-    - datasets==2.21.0
+    - bitsandbytes==0.45.3
+    - transformers==4.49.0
+    - peft~=0.14.0
+    - accelerate~=1.5.2
+    - trl==0.15.2
+    - einops==0.8.1
+    - datasets==3.4.0
     - wandb==0.17.8
     - mlflow==2.16.0
-    - azureml-mlflow==1.57.0
-    - azureml-sdk==1.57.0
-    - torchvision==0.19.0
-    - torch==2.4.0
+    - azureml-mlflow==1.59.0
+    - azureml-sdk==1.59.0
+    - wandb==0.19.8
+    - torch==2.6.0
+    - torchaudio==2.6.0    
+    - torchvision==0.21.0
